@@ -1,5 +1,6 @@
 # neurioToPvoutput
 Python script to upload neur.io generation and consumption data to pvoutput.org
+* right now the -s option won't work due to changes in the underlying neurio package.
 
 ## Installation
 1.  Install required packages (see section below)
