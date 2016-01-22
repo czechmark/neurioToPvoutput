@@ -25,6 +25,7 @@ import getopt
 import datetime
 import subprocess
 import pprint
+import requests
 
 sys.path.append(".")
 sys.path.append("..")
