@@ -69,6 +69,28 @@ def log_pvoutput(batchS):
 
    #send the request
    ret = subprocess.call(cmd, shell=True)
+def gen_headers(token):
+    """Utility method adding authentication token to requests."""
+    headers = {
+      "Authorization": " ".join(["Bearer", token])
+    }
+    return headers
+
+
+def get_user_information(client,tp):
+    """Gets the current user information, including sensor ID
+    Args:
+      None
+    Returns:
+      dictionary object containing information about the current user
+    """
+    url = "https://api.neur.io/v1/users/current"
+
+    headers = gen_headers(tp.get_token())
+    headers["Content-Type"] = "application/json"
+
+    r = requests.get(url, headers=headers)
+    return r.json()
 
 def main(argv):
 
@@ -119,7 +141,7 @@ def main(argv):
 
         #read the sensor Id 
         if getSensorId:
-           user_info = nc.get_user_information()
+           user_info = get_user_information(nc,tp)
            locations = user_info.get("locations")
            sensors = locations[0].get("sensors")
            sensorId = sensors[0].get("sensorId")
