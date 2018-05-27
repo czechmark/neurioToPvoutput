@@ -65,8 +65,13 @@ def log_pvoutput(batchS):
    global APIKEY
 
    #build the http request to pvoutput including the ApiKey and the system Id
+   #cmd=('curl -d "data=%s" -H "X-Pvoutput-Apikey:%s" -H "X-Pvoutput-SystemId:%s" \
+   #cmd=('curl -x 181.48.229.106:8080 -d "data=%s" -H "X-Pvoutput-Apikey:%s" -H "X-Pvoutput-SystemId:%s" \
+   #cmd=('curl -x pvoutput.org:8080 -d "data=%s" -H "X-Pvoutput-Apikey:%s" -H "X-Pvoutput-SystemId:%s" \
+   #     http://pvoutput.org/service/r2/addbatchstatus.jsp' %(batchS,APIKEY,SYSTEMID)) 
    cmd=('curl -d "data=%s" -H "X-Pvoutput-Apikey:%s" -H "X-Pvoutput-SystemId:%s" \
         http://pvoutput.org/service/r2/addbatchstatus.jsp' %(batchS,APIKEY,SYSTEMID)) 
+   #print cmd;
 
    #send the request
    ret = subprocess.call(cmd, shell=True)
@@ -157,6 +162,7 @@ def main(argv):
         else:
           stime = datetime.datetime.now() - datetime.timedelta(days=1)
           etime = stime+datetime.timedelta(days=1)
+        etime=etime - datetime.timedelta(hours=1)
 
         #nuerio uses UTC, so we need to convert localtime to UTC and 
         #format the strings that neurio expects
@@ -164,9 +170,12 @@ def main(argv):
         etime = etime.replace(tzinfo=ltz)
         stimeString = stime.astimezone(UTCtz).strftime("%Y-%m-%dT%H:%M:%S")
         etimeString = etime.astimezone(UTCtz).strftime("%Y-%m-%dT%H:%M:%S")
+        #print etimeString;
+        #print stimeString;
 
         #read the data from neurio
         stats = nc.get_samples_stats(my_keys.sensor_id,stimeString,"minutes",etimeString,5)
+        #print stats;
 
         cnt = 0;
         batchString=''
@@ -176,6 +185,7 @@ def main(argv):
  
            #read the time
            time = dateutil.parser.parse(item.get("start")).astimezone(ltz)
+           #print time;
 
            #Read in the Energy and convert it to power in the 5 minute time
            #Energy is in WattSec, Pvoutput wants watts
