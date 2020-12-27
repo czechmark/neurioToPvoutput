@@ -174,8 +174,10 @@ def main(argv):
         #print stimeString;
 
         #read the data from neurio
+        print "Got here"
         stats = nc.get_samples_stats(my_keys.sensor_id,stimeString,"minutes",etimeString,5)
-        #print stats;
+        print stats;
+        print "Got here2"
 
         cnt = 0;
         batchString=''
@@ -183,9 +185,10 @@ def main(argv):
         #build the string from the stats we read
         for item in stats:
  
+           print stats
            #read the time
            time = dateutil.parser.parse(item.get("start")).astimezone(ltz)
-           #print time;
+           print time;
 
            #Read in the Energy and convert it to power in the 5 minute time
            #Energy is in WattSec, Pvoutput wants watts
