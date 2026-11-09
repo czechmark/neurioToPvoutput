@@ -71,10 +71,11 @@ def log_pvoutput(batchS):
    #     http://pvoutput.org/service/r2/addbatchstatus.jsp' %(batchS,APIKEY,SYSTEMID)) 
    cmd=('curl -d "data=%s" -H "X-Pvoutput-Apikey:%s" -H "X-Pvoutput-SystemId:%s" \
         http://pvoutput.org/service/r2/addbatchstatus.jsp' %(batchS,APIKEY,SYSTEMID)) 
-   #print cmd;
+   print cmd;
 
    #send the request
    ret = subprocess.call(cmd, shell=True)
+   print ret;
 def gen_headers(token):
     """Utility method adding authentication token to requests."""
     headers = {
@@ -145,10 +146,14 @@ def main(argv):
                                        secret=my_keys.secret)
         nc = neurio.Client(token_provider=tp)
 
+        print getSensorId
+
         #read the sensor Id 
         if getSensorId:
            user_info = get_user_information(nc,tp)
+           print user_info
            locations = user_info.get("locations")
+           print locations
            sensors = locations[0].get("sensors")
            sensorId = sensors[0].get("sensorId")
            print "Sensor Id = " + sensorId.encode("utf-8")
@@ -158,11 +163,15 @@ def main(argv):
         #so limit the data to either now - 1day or input offset time + 1 day
         if entireDay:
           stime = datetime.datetime.now() - datetime.timedelta(hours=dHrs)
-          etime = stime + datetime.timedelta(days=1)
+          etime = stime + datetime.timedelta(hours=22)
         else:
-          stime = datetime.datetime.now() - datetime.timedelta(days=1)
-          etime = stime+datetime.timedelta(days=1)
-        etime=etime - datetime.timedelta(hours=1)
+          stime = datetime.datetime.now() - datetime.timedelta(hours=22)
+          etime = stime+datetime.timedelta(hours=22)
+        #etime=etime - datetime.timedelta(hours=1)
+        #etime=datetime.datetime.now()
+        #stime = etime - datetime.timedelta(hours=22)
+        print stime
+        print etime
 
         #nuerio uses UTC, so we need to convert localtime to UTC and 
         #format the strings that neurio expects
@@ -176,7 +185,7 @@ def main(argv):
         #read the data from neurio
         print "Got here"
         stats = nc.get_samples_stats(my_keys.sensor_id,stimeString,"minutes",etimeString,5)
-        print stats;
+        #print stats;
         print "Got here2"
 
         cnt = 0;
@@ -191,7 +200,7 @@ def main(argv):
            print time;
 
            #Read in the Energy and convert it to power in the 5 minute time
-           #Energy is in WattSec, Pvoutput wants watts
+          #Energy is in WattSec, Pvoutput wants watts
            #So WattSec/3600Sec/Hr*12(5minute periods/hour) = Watts in the 5minute period
            cons = float(item.get("consumptionEnergy"))/3600*12
            gen = float(item.get("generationEnergy"))/3600*12

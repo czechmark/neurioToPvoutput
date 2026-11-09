@@ -15,7 +15,8 @@ import subprocess
 # global variables
 speriod=(15*60)-1
 dbname='/var/www/neuriolog.db'
-ip='192.168.13.239'
+#ip='192.168.13.218'
+ip='192.168.13.13'
 endPoint='/both_tables.html'
 myOption=''
 
